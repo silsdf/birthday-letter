@@ -2,9 +2,10 @@
 <html lang="zh-CN" class="force-landscape">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>电子信</title>
   <link rel="stylesheet" href="./mobile-landscape.css">
+  <script src="./mobile-fullscreen.js" defer></script>
   <style>
     @font-face {
       font-family: "Fusion Pixel";
@@ -41,15 +42,16 @@
     .password-gate {
       position: relative;
       z-index: 1;
-      width: min(90vw, 760px);
-      padding: 30px 34px 24px;
+      width: min(94vw, 1160px);
+      padding: 22px 28px 18px;
       background: #f5d39a;
       border: 6px solid #5b2b18;
       box-shadow: inset 0 0 0 4px #fff0bb, 0 12px 0 #241009;
     }
 
     .letter {
-      min-height: min(78vh, 660px);
+      height: calc(100dvh - 24px);
+      min-height: 0;
       display: flex;
       flex-direction: column;
     }
@@ -70,8 +72,8 @@
       flex: 1;
       overflow-y: auto;
       white-space: pre-wrap;
-      font-size: clamp(15px, 2.5vw, 20px);
-      line-height: 1.8;
+      font-size: clamp(15px, 1.8vw, 19px);
+      line-height: 1.72;
     }
 
     .footer {

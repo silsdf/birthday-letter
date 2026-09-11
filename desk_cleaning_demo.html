@@ -2,9 +2,10 @@
 <html lang="zh-CN" class="force-landscape">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>书桌整理 Demo</title>
   <link rel="stylesheet" href="./mobile-landscape.css">
+  <script src="./mobile-fullscreen.js" defer></script>
   <style>
     @font-face {
       font-family: "Fusion Pixel";
@@ -32,7 +33,7 @@
 
     .stage {
       position: relative;
-      width: min(100vw, 100vh);
+      width: min(100vw, 100dvh);
       aspect-ratio: 1;
       border: 6px solid #4b2517;
       box-shadow: 0 0 0 4px #b9763d, 0 12px 0 #32170f;

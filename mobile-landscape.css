@@ -1,42 +1,45 @@
-@media (orientation: portrait) and (max-width: 900px) {
-  html.force-landscape {
-    width: 100vh;
-    height: 100vw;
-    overflow: hidden;
-    background: #1c100a;
-  }
+html.force-landscape,
+html.force-landscape body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
-  html.force-landscape body {
-    position: fixed;
-    inset: 0 auto auto 0;
-    width: 100vh;
-    height: 100vw;
-    min-width: 100vh;
-    min-height: 100vw;
-    overflow: hidden;
-    transform: rotate(90deg) translateY(-100%);
-    transform-origin: 0 0;
+html.force-landscape body {
+  min-height: 100dvh !important;
+}
+
+.fullscreen-button {
+  position: fixed;
+  right: max(10px, env(safe-area-inset-right));
+  top: max(10px, env(safe-area-inset-top));
+  z-index: 50;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 3px solid #4b2517;
+  background: #d99045;
+  color: #35190f;
+  box-shadow: inset 0 0 0 3px #f0bd68, 0 4px 0 #2a120b;
+  font: inherit;
+  opacity: 0.9;
+}
+
+html.is-fullscreen .fullscreen-button {
+  display: none;
+}
+
+@media (orientation: landscape) and (max-height: 720px) {
+  html.force-landscape .scene {
+    width: min(86vw, 720px) !important;
+    padding: 22px !important;
   }
 
   html.force-landscape #autumnVN {
-    width: min(100vh, 177.78vw) !important;
-  }
-
-  html.force-landscape .scene {
-    width: min(82vh, 720px) !important;
-  }
-
-  html.force-landscape .letter,
-  html.force-landscape .password-gate {
-    width: min(90vh, 760px) !important;
-  }
-
-  html.force-landscape .egg-panel {
-    width: min(88vh, 560px) !important;
+    width: min(100vw, 177.78dvh) !important;
   }
 
   html.force-landscape .album {
-    width: min(94vh, 1080px) !important;
-    min-height: min(88vw, 720px) !important;
+    width: min(96vw, 1080px) !important;
+    min-height: min(92dvh, 720px) !important;
   }
 }
