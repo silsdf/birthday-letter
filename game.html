@@ -279,7 +279,7 @@
 
     function startBedroom() {
       document.documentElement.classList.add("force-landscape");
-      document.documentElement.requestFullscreen?.().catch(() => {});
+      window.enterPreferredFullscreen?.();
       screen.orientation?.lock?.("landscape")?.catch(() => {});
       window.installFullscreenButton?.();
       selectScreen.classList.add("hidden");

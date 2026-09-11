@@ -176,8 +176,10 @@
 
     .choices {
       display: grid;
+      justify-items: start;
       gap: 8px;
       margin-top: 12px;
+      pointer-events: none;
     }
 
     .choice,
@@ -192,6 +194,9 @@
     .choice {
       padding: 10px 12px;
       text-align: left;
+      width: auto;
+      max-width: 100%;
+      pointer-events: auto;
     }
 
     .start {

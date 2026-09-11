@@ -103,20 +103,18 @@
     .pad {
       position: fixed;
       right: calc((100vw - min(100vw, 102.42dvh)) / 2 + max(18px, env(safe-area-inset-right)));
-      top: 50%;
-      bottom: auto;
-      transform: translateY(-50%);
+      bottom: max(18px, env(safe-area-inset-bottom));
       display: grid;
       grid-template-columns: repeat(3, 52px);
       grid-template-rows: repeat(3, 52px);
       gap: 6px;
       z-index: 5;
-      opacity: 0.48;
+      opacity: 0.3;
     }
 
     .pad:active,
     .pad:hover {
-      opacity: 0.84;
+      opacity: 0.7;
     }
 
     .pad button {
