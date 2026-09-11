@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>彩蛋</title>
+  <style>
+    @font-face {
+      font-family: "Fusion Pixel";
+      src: url("./assets/fonts/fusion-pixel-12px-proportional-zh_hans.woff2") format("woff2");
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #6f422c 0, #27130d 62%, #120806 100%);
+      color: #ffe6a3;
+      font-family: "Fusion Pixel", "Microsoft YaHei", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .album {
+      width: min(94vw, 1080px);
+      min-height: min(88vh, 720px);
+      padding: 22px;
+      background: #7b4428;
+      border: 6px solid #3b1c12;
+      box-shadow: inset 0 0 0 5px #d7964e, 0 10px 0 #26120c;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      text-align: center;
+      font-size: clamp(22px, 5vw, 34px);
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 0.72fr 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    figure {
+      margin: 0;
+      padding: 10px;
+      background: #f5d39a;
+      border: 4px solid #4b2517;
+      box-shadow: inset 0 0 0 3px #fff0bb, 0 5px 0 #2a120b;
+    }
+
+    figcaption {
+      margin-bottom: 8px;
+      color: #4a2717;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      max-height: 56vh;
+      object-fit: contain;
+      image-rendering: auto;
+    }
+
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    button {
+      min-height: 40px;
+      padding: 0 16px;
+      border: 3px solid #4b2517;
+      background: #f2b766;
+      color: #3f2114;
+      box-shadow: inset 0 0 0 3px #ffd080, 0 4px 0 #2a120b;
+      font: inherit;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+    }
+
+    .end {
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      background: rgba(18, 8, 6, 0.88);
+      font-size: clamp(32px, 10vw, 72px);
+      letter-spacing: 0.12em;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        overflow: auto;
+      }
+
+      .album {
+        margin: 14px 0;
+      }
+
+      .pair {
+        grid-template-columns: 1fr;
+      }
+
+      img {
+        max-height: 34vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="album" class="album">
+    <h1 id="title"></h1>
+    <section class="pair">
+      <figure>
+        <img id="original" alt="">
+      </figure>
+      <figure>
+        <figcaption>记忆贴纸卡</figcaption>
+        <img id="card" alt="">
+      </figure>
+    </section>
+    <div class="controls">
+      <button id="prevButton" type="button">上一页</button>
+      <span id="pageNumber"></span>
+      <button id="nextButton" type="button">下一页</button>
+    </div>
+  </main>
+  <div id="end" class="end hidden">生日快乐</div>
+
+  <script>
+    const pages = [
+      {
+        title: "生日蛋糕和你",
+        original: "./assets/easter-egg/birthday-cake-original.jpg",
+        card: "./assets/easter-egg/birthday-cake-memory-card.png"
+      },
+      {
+        title: "要一起玩",
+        original: "./assets/easter-egg/play-together-original.jpg",
+        card: "./assets/easter-egg/play-together-memory-card.png"
+      },
+      {
+        title: "最平凡的一天呀",
+        original: "./assets/easter-egg/ordinary-day-original.jpg",
+        card: "./assets/easter-egg/ordinary-day-memory-card.png"
+      }
+    ];
+
+    let pageIndex = 0;
+    let audioContext;
+    let musicTimer;
+    const title = document.querySelector("#title");
+    const original = document.querySelector("#original");
+    const card = document.querySelector("#card");
+    const pageNumber = document.querySelector("#pageNumber");
+    const prevButton = document.querySelector("#prevButton");
+    const nextButton = document.querySelector("#nextButton");
+
+    function renderPage() {
+      const page = pages[pageIndex];
+      title.textContent = page.title;
+      original.src = page.original;
+      original.alt = `${page.title}原图`;
+      card.src = page.card;
+      card.alt = `${page.title}记忆贴纸卡`;
+      pageNumber.textContent = `${pageIndex + 1} / ${pages.length}`;
+      prevButton.disabled = pageIndex === 0;
+      nextButton.textContent = pageIndex === pages.length - 1 ? "生日快乐" : "下一页";
+    }
+
+    function startMusic() {
+      if (audioContext) return;
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      audioContext = new AudioCtx();
+      const notes = [392, 440, 523.25, 493.88, 440, 392, 349.23, 392];
+      const playNote = () => {
+        const now = audioContext.currentTime;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = "sine";
+        osc.frequency.value = notes[Math.floor(now * 0.7) % notes.length];
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.045, now + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+        osc.connect(gain).connect(audioContext.destination);
+        osc.start(now);
+        osc.stop(now + 1.25);
+      };
+      playNote();
+      musicTimer = setInterval(playNote, 1400);
+    }
+
+    prevButton.addEventListener("click", () => {
+      startMusic();
+      if (pageIndex > 0) {
+        pageIndex -= 1;
+        renderPage();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      startMusic();
+      if (pageIndex < pages.length - 1) {
+        pageIndex += 1;
+        renderPage();
+      } else {
+        document.querySelector("#album").classList.add("hidden");
+        document.querySelector("#end").classList.remove("hidden");
+      }
+    });
+
+    document.body.addEventListener("pointerdown", startMusic, { once: true });
+    renderPage();
+  </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>床铺整理 Demo</title>
+  <style>
+    @font-face {
+      font-family: "Fusion Pixel";
+      src: url("./assets/fonts/fusion-pixel-12px-proportional-zh_hans.woff2") format("woff2");
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #6d3d22;
+      color: #fff1bd;
+      font-family: "Fusion Pixel", "Microsoft YaHei", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .stage {
+      position: relative;
+      width: min(100vw, 100vh);
+      aspect-ratio: 1;
+      border: 6px solid #4b2517;
+      box-shadow: 0 0 0 4px #b9763d, 0 12px 0 #32170f;
+      background: #1a0d0a;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      cursor: grab;
+    }
+
+    .hint {
+      position: absolute;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      padding: 10px 16px;
+      border: 3px solid #6b351c;
+      background: #f4bf6d;
+      color: #4a2313;
+      box-shadow: 0 4px 0 #7f4728;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .back {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      padding: 8px 12px;
+      border: 3px solid #6b351c;
+      background: #f4bf6d;
+      color: #4a2313;
+      box-shadow: 0 4px 0 #7f4728;
+      font: inherit;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <button id="backButton" class="back" type="button">返回卧室</button>
+    <canvas id="bedCleaningCanvas"></canvas>
+    <div id="bedCleaningHint" class="hint">长按并拖动除螨仪清洁被子</div>
+  </main>
+
+  <script type="module">
+    import { BedCleaningScene } from "./bed-cleaning-scene.js?v=5";
+    import { completeTask } from "./game-progress.js";
+
+    const canvas = document.querySelector("#bedCleaningCanvas");
+    const fromGame = new URLSearchParams(location.search).get("from") === "game";
+    document.querySelector("#backButton").addEventListener("click", () => {
+      location.href = fromGame ? "game.html?return=back" : "bedroom_scene_test.html";
+    });
+    canvas.addEventListener("scene-complete", () => {
+      if (!fromGame) return;
+      completeTask("bed");
+      setTimeout(() => location.href = "game.html?return=bed", 800);
+    }, { once: true });
+
+    new BedCleaningScene(canvas, document.querySelector("#bedCleaningHint")).start();
+  </script>
+</body>
+</html>

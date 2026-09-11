@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>电子信</title>
+  <style>
+    @font-face {
+      font-family: "Fusion Pixel";
+      src: url("./assets/fonts/fusion-pixel-12px-proportional-zh_hans.woff2") format("woff2");
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #1c100a;
+      color: #3d2415;
+      font-family: "Fusion Pixel", "Microsoft YaHei", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -18px;
+      background: linear-gradient(rgba(40, 20, 12, 0.25), rgba(40, 20, 12, 0.45)), url("./assets/autumn-vn/background-4.png") center / cover;
+      filter: blur(4px);
+      transform: scale(1.04);
+    }
+
+    .letter {
+      position: relative;
+      z-index: 1;
+      width: min(90vw, 760px);
+      min-height: min(78vh, 660px);
+      padding: 30px 34px 24px;
+      display: flex;
+      flex-direction: column;
+      background: #f5d39a;
+      border: 6px solid #5b2b18;
+      box-shadow: inset 0 0 0 4px #fff0bb, 0 12px 0 #241009;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      text-align: center;
+      font-size: 26px;
+      color: #5b2b18;
+    }
+
+    .page {
+      flex: 1;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-size: clamp(15px, 2.5vw, 20px);
+      line-height: 1.8;
+    }
+
+    .footer {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      min-height: 38px;
+      padding: 0 14px;
+      border: 3px solid #5b2b18;
+      background: #d99045;
+      color: #35190f;
+      box-shadow: inset 0 0 0 3px #f0bd68, 0 4px 0 #2a120b;
+      font: inherit;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+    }
+
+    .closed {
+      position: relative;
+      z-index: 1;
+      padding: 24px 30px;
+      background: #7b4428;
+      color: #ffe6a3;
+      border: 6px solid #3b1c12;
+      box-shadow: inset 0 0 0 5px #d7964e, 0 10px 0 #26120c;
+      text-align: center;
+    }
+
+    .egg-button {
+      display: block;
+      margin: 18px auto 0;
+    }
+
+    .egg-panel {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      z-index: 2;
+      width: min(88vw, 560px);
+      padding: 58px 22px 22px;
+      transform: translate(-50%, -50%);
+      background: #f5d39a;
+      border: 6px solid #5b2b18;
+      box-shadow: inset 0 0 0 4px #fff0bb, 0 12px 0 #241009;
+      color: #3d2415;
+    }
+
+    .egg-back {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+    }
+
+    .egg-panel input {
+      width: 100%;
+      min-height: 40px;
+      margin: 14px 0;
+      padding: 6px 10px;
+      border: 3px solid #5b2b18;
+      background: #fff0bb;
+      color: #3d2415;
+      font: inherit;
+    }
+
+    .egg-error {
+      min-height: 20px;
+      margin-top: 10px;
+      color: #8f2d1c;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <main id="letter" class="letter">
+    <h1 id="letterTitle"></h1>
+    <div id="pageText" class="page"></div>
+    <div class="footer">
+      <span id="pageNumber"></span>
+      <div class="buttons">
+        <button id="prevButton" type="button">上一页</button>
+        <button id="nextButton" type="button">下一页</button>
+      </div>
+    </div>
+  </main>
+  <div id="closed" class="closed hidden">
+    <div>电子信已收起</div>
+    <button id="eggButton" class="egg-button" type="button">彩蛋</button>
+  </div>
+  <div id="eggPanel" class="egg-panel hidden">
+    <button id="eggBack" class="egg-back" type="button">返回</button>
+    <div>这封信藏了一张专辑，其中有两首歌名没有提及，它们有一个共同的名字，请输入（提示：两个字）</div>
+    <input id="eggInput" type="text" maxlength="8" autocomplete="off">
+    <div class="buttons">
+      <button id="eggSubmit" type="button">确认</button>
+      <button id="eggSkip" type="button">跳过</button>
+    </div>
+    <div id="eggError" class="egg-error"></div>
+  </div>
+
+  <script>
+    const letterData = {
+      title: "等",
+      pages: [
+        "To 亲爱的楠楠：\n\n生日快乐！！又是一年更迭，又是一年初秋，在这所你在的城市，为你献上异地的祝福。\n\n这是一封特殊的，没能传达过去的纸质书信，学习怎么用代码叩住只言片语，期望可以毫无保留地传递到你手心，与传统相悖，但庆幸的是，墨水留在电子里就不会随着时间消逝。\n\n距离的分隔，让我想要寻找什么是离你最近的位置，那会是围绕在你身边的空气，还是身上穿着的衣料。当一整日的疲惫刷洗之后，期望附在身上的柔软，最安心，最舒心。哪怕我希望你所在的城市总是好天气，但临海的城市，难免会有多雨季。所以如果这份礼物能卷走枕被上的迷尘，哪怕在暗沉的阴雨天气，愿它能为你送来一床暖阳。",
+        "于是深夜一角，在梦乡里最靠近你。闭上眼回顾过往，记忆里的你模糊又清晰。我停住了追问的脚步，留了一个影子让时间请她慢慢清晰。这样，哪怕离你远一点，走得慢一点，是不是早晚也有一天可以跨过一程长长山路，抵达你身边的角落。\n\n时间会给你答案，你对此是否深信不疑。似乎时间会反射虚伪，抹去那些单纯的照面，筛掉空无一物，剩下不变的，是磨得赤诚的真心。笔直的道路最终通向目的地，你的方向坚定又坚决，岁月也带给我们故事，你舍弃了什么，又留住了什么，在万变里不变，拂过踩过路边草木，那些都是认识你的outro。\n\n于是连风也会呓语，听得我想跟着你走。在今夜提前入秋的南宁，落叶清爽地沙沙作响，庆幸你的生日在今年的9月，才显得冷空气也没这么刺骨。偶尔孤寂落在心头，质疑自己的选择，也不知道自己在等些什么。可南宁已经很久没有秋天了，这场季节由广东的台风刮来，从你身边吹来的微凉，刚刚好填补了我原本想要去北方感受的秋意。",
+        "来年还有多少回，也许二零三零年我们会走在一起，可惜今年心有余而力不足，送出的礼物也许并不达意，如果你愿意，还可以再等等我嘛？在漫长的时间刻度里，还有很多未来有你的影子，是你钟情的江南水乡，还是常唱的东北民谣，再一起去看看，去体会，去抚摸，去流动。故事就可以一直一直讲，像北京孩童绕不出的胡同，像周而复始的四季，像单曲循环的歌谣，像心里千回百转的思念。\n\n始终如一，又是一年乐此不疲的祝福，怎么说都由衷地希望你幸福。修修改改的草稿，最后只能成为这一封短短的，为你写的，几分钟就可以放完的小小日记。如果可以再多攒一些，也许凑够半生也只是时间问题，所以赶在明日零点前，再一次祝你生日快乐。"
+      ]
+    };
+
+    let pageIndex = 0;
+    const letter = document.querySelector("#letter");
+    const closed = document.querySelector("#closed");
+    const title = document.querySelector("#letterTitle");
+    const pageText = document.querySelector("#pageText");
+    const pageNumber = document.querySelector("#pageNumber");
+    const prevButton = document.querySelector("#prevButton");
+    const nextButton = document.querySelector("#nextButton");
+    const eggPanel = document.querySelector("#eggPanel");
+    const eggInput = document.querySelector("#eggInput");
+    const eggError = document.querySelector("#eggError");
+    const goEggScene = () => { location.href = "easter_egg_scene.html"; };
+
+    function renderPage() {
+      title.textContent = letterData.title;
+      title.classList.toggle("hidden", pageIndex !== 0);
+      pageText.textContent = letterData.pages[pageIndex];
+      pageNumber.textContent = `${pageIndex + 1} / ${letterData.pages.length}`;
+      prevButton.disabled = pageIndex === 0;
+      nextButton.textContent = pageIndex === letterData.pages.length - 1 ? "收起" : "下一页";
+    }
+
+    prevButton.addEventListener("click", () => {
+      if (pageIndex > 0) {
+        pageIndex -= 1;
+        renderPage();
+      }
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (pageIndex < letterData.pages.length - 1) {
+        pageIndex += 1;
+        renderPage();
+      } else {
+        letter.classList.add("hidden");
+        closed.classList.remove("hidden");
+      }
+    });
+
+    document.querySelector("#eggButton").addEventListener("click", () => {
+      eggPanel.classList.remove("hidden");
+      eggInput.focus();
+    });
+    document.querySelector("#eggBack").addEventListener("click", () => {
+      pageIndex = 0;
+      eggPanel.classList.add("hidden");
+      closed.classList.add("hidden");
+      letter.classList.remove("hidden");
+      eggError.textContent = "";
+      renderPage();
+    });
+    document.querySelector("#eggSubmit").addEventListener("click", () => {
+      if (eggInput.value.trim() === "小王") goEggScene();
+      else eggError.textContent = "再试试？";
+    });
+    eggInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") document.querySelector("#eggSubmit").click();
+    });
+    document.querySelector("#eggSkip").addEventListener("click", goEggScene);
+
+    renderPage();
+  </script>
+</body>
+</html>

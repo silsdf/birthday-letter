@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>阳光卧室</title>
+  <style>
+    @font-face {
+      font-family: "Fusion Pixel";
+      src: url("./assets/fonts/fusion-pixel-12px-proportional-zh_hans.woff2") format("woff2");
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #6d3d22;
+      color: #fff1bd;
+      font-family: "Fusion Pixel", "Microsoft YaHei", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .panel {
+      width: min(92vw, 760px);
+      padding: 24px;
+      background: #d99a58;
+      border: 5px solid #6e3b22;
+      box-shadow: inset 0 0 0 4px #f4c36f, 0 10px 0 #4b2517;
+      color: #4a2717;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 24px;
+    }
+
+    #characterPreview {
+      display: block;
+      margin: 0 auto 16px;
+      image-rendering: pixelated;
+      background: #f1bf73;
+      border: 4px solid #7b4428;
+      box-shadow: inset 0 0 0 4px #b86f38;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+    }
+
+    select,
+    button {
+      min-height: 38px;
+      border: 3px solid #7b4428;
+      background: #f2b766;
+      color: #3f2114;
+      font: inherit;
+    }
+
+    .headGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .selected {
+      background: #b86f38;
+      border-color: #ffe08a;
+      color: #fff4c0;
+    }
+
+    .stage {
+      position: relative;
+      width: min(96vw, 96vh);
+      aspect-ratio: 1;
+      border: 6px solid #4b2517;
+      box-shadow: 0 0 0 4px #b9763d, 0 12px 0 #32170f;
+      background: #1a0d0a;
+    }
+
+    #bedroomCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+    }
+
+    .prompt,
+    .reward {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 3px solid #6b351c;
+      background: #f4bf6d;
+      color: #4a2313;
+      box-shadow: 0 4px 0 #7f4728;
+      pointer-events: none;
+    }
+
+    .prompt {
+      bottom: 28px;
+      padding: 10px 16px;
+    }
+
+    .reward {
+      top: 70px;
+      width: 300px;
+      padding: 18px;
+      text-align: center;
+      pointer-events: auto;
+    }
+
+    .sticker {
+      width: 76px;
+      height: 60px;
+      margin: 0 auto 10px;
+      background: #ffe38b;
+      border: 6px solid #fff0ae;
+      box-shadow: inset 0 0 0 10px #ffba2f;
+    }
+
+    .help {
+      position: fixed;
+      left: 16px;
+      bottom: 14px;
+      color: #ffe6a3;
+      text-shadow: 2px 2px #3a1c12;
+    }
+
+    .fade {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 700ms ease;
+      z-index: 10;
+    }
+
+    .fade.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .touch-controls {
+      position: fixed;
+      left: calc(50% + min(48vw, 48vh) + 12px);
+      bottom: 18px;
+      z-index: 8;
+      display: grid;
+      grid-template-columns: repeat(3, 48px);
+      grid-template-rows: repeat(4, 48px);
+      gap: 6px;
+      opacity: 0.82;
+    }
+
+    .touch-controls button {
+      padding: 0;
+      border: 3px solid #7b4428;
+      background: #f2b766;
+      color: #3f2114;
+      box-shadow: inset 0 0 0 3px #ffd080, 0 3px 0 #4b2517;
+      font: inherit;
+      touch-action: none;
+    }
+
+    .pad-up { grid-column: 2; grid-row: 1; }
+    .pad-left { grid-column: 1; grid-row: 2; }
+    .pad-action { grid-column: 2; grid-row: 2; font-size: 14px; }
+    .pad-right { grid-column: 3; grid-row: 2; }
+    .pad-down { grid-column: 2; grid-row: 3; }
+
+    .rotate-tip {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      place-items: center;
+      padding: 28px;
+      background: rgba(26, 13, 10, 0.92);
+      color: #ffe6a3;
+      text-align: center;
+      font-size: 20px;
+    }
+
+    @media (orientation: portrait) and (max-width: 900px) {
+      #gameScreen,
+      #help,
+      .touch-controls {
+        display: none !important;
+      }
+
+      .rotate-tip {
+        display: grid;
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .touch-controls {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main id="selectScreen"></main>
+
+  <section id="gameScreen" class="stage hidden">
+    <canvas id="bedroomCanvas"></canvas>
+    <div id="interactionPrompt" class="prompt" hidden></div>
+    <div id="reward" class="reward hidden">
+      <div class="sticker"></div>
+      <div>获得物品：太阳贴纸</div>
+      <button id="closeReward" type="button">收下</button>
+    </div>
+  </section>
+  <div id="help" class="help hidden">WASD / 方向键移动，靠近物品后按 E 或点击整理</div>
+  <div id="fade" class="fade"></div>
+  <div class="rotate-tip">请把手机横过来继续探索小屋</div>
+  <div id="touchControls" class="touch-controls hidden" aria-label="移动控制">
+    <button class="pad-up" data-key="ArrowUp" type="button">↑</button>
+    <button class="pad-left" data-key="ArrowLeft" type="button">←</button>
+    <button class="pad-action" data-key="e" type="button">整理</button>
+    <button class="pad-right" data-key="ArrowRight" type="button">→</button>
+    <button class="pad-down" data-key="ArrowDown" type="button">↓</button>
+  </div>
+
+  <script type="module">
+    import { CharacterSelect } from "./character/character-select.js?v=5";
+    import { BedroomScene } from "./BedroomScene.js?v=10";
+    import { TASKS, loadProgress, saveProgress, resetProgress, savePlayerPosition, allTasksComplete } from "./game-progress.js?v=2";
+    import { STORAGE_KEY } from "./character/sprite-meta.js";
+
+    const params = new URLSearchParams(location.search);
+    const selectScreen = document.querySelector("#selectScreen");
+    const gameScreen = document.querySelector("#gameScreen");
+    const help = document.querySelector("#help");
+    const reward = document.querySelector("#reward");
+    const closeReward = document.querySelector("#closeReward");
+    const fade = document.querySelector("#fade");
+    const touchControls = document.querySelector("#touchControls");
+    const doorSound = new Audio("./assets/door-open.mp3");
+
+    if (params.has("return") && localStorage.getItem(STORAGE_KEY)) {
+      startBedroom();
+    } else {
+      const chooser = new CharacterSelect(selectScreen);
+      chooser.start();
+      selectScreen.addEventListener("character-confirmed", () => {
+        resetProgress();
+        startBedroom();
+      }, { once: true });
+    }
+
+    closeReward.addEventListener("click", () => reward.classList.add("hidden"));
+
+    function startBedroom() {
+      selectScreen.classList.add("hidden");
+      gameScreen.classList.remove("hidden");
+      help.classList.remove("hidden");
+      touchControls.classList.remove("hidden");
+
+      const progress = loadProgress();
+      const scene = new BedroomScene(
+        document.querySelector("#bedroomCanvas"),
+        document.querySelector("#interactionPrompt"),
+        {
+          startPosition: progress.playerPosition,
+          onInteract(zone) {
+            if (zone.id === "exitZone") {
+              doorSound.currentTime = 0;
+              doorSound.play().catch(() => {});
+              fade.classList.add("show");
+              setTimeout(() => location.href = "second_scene.html", 760);
+              return;
+            }
+            const task = TASKS[zone.id];
+            if (task) {
+              savePlayerPosition(scene.getPlayerPosition());
+              location.href = task.url;
+            }
+          }
+        }
+      );
+      scene.start();
+      showRewardIfReady();
+      if (allTasksComplete()) help.textContent = "三个整理已完成，可以从门口出门了";
+    }
+
+    for (const button of document.querySelectorAll("[data-key]")) {
+      const key = button.dataset.key;
+      const press = event => {
+        event.preventDefault();
+        window.dispatchEvent(new KeyboardEvent("keydown", { key }));
+      };
+      const release = event => {
+        event.preventDefault();
+        window.dispatchEvent(new KeyboardEvent("keyup", { key }));
+      };
+      button.addEventListener("pointerdown", press);
+      button.addEventListener("pointerup", release);
+      button.addEventListener("pointercancel", release);
+      button.addEventListener("pointerleave", release);
+    }
+
+    function showRewardIfReady() {
+      const progress = loadProgress();
+      if (!params.has("return") || progress.stickerAwarded || !allTasksComplete()) return;
+      progress.stickerAwarded = true;
+      saveProgress(progress);
+      reward.classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>

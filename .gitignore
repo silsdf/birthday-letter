@@ -1,0 +1,9 @@
+external-assets/
+.claude/
+.codex/
+.agents/
+__pycache__/
+review_output/
+*.pyc
+*.zip
+*.psd

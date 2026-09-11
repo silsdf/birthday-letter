@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>秋日来信 · 第三幕</title>
+  <style>
+    @font-face {
+      font-family: "Fusion Pixel";
+      src: url("./assets/fonts/fusion-pixel-12px-proportional-zh_hans.woff2") format("woff2");
+      font-display: swap;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #000;
+      color: #ffe9b0;
+      font-family: "Fusion Pixel", "Microsoft YaHei", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    .stage {
+      position: relative;
+      width: min(100vw, 177.78vh);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #090603;
+      image-rendering: pixelated;
+      touch-action: manipulation;
+    }
+
+    .layer {
+      position: absolute;
+      inset: -2%;
+      background-position: center;
+      background-size: cover;
+      image-rendering: pixelated;
+      opacity: 0;
+      transition: opacity 2600ms ease;
+    }
+
+    .black.clear ~ .layer {
+      opacity: 1;
+    }
+
+    .bg {
+      background-image: url("./assets/autumn-vn/background-1-no-birds.png?v=2");
+      animation: breathe 9s ease-in-out infinite;
+    }
+
+    .bg[data-background="forestDeep"] {
+      background-image: url("./assets/autumn-vn/background-3.png?v=1");
+    }
+
+    .bg[data-background="river"] {
+      background-image: url("./assets/autumn-vn/river.png?v=1");
+    }
+
+    .bg[data-background="squirrel"] {
+      background-image: url("./assets/autumn-vn/background-2.png?v=1");
+    }
+
+    .bg[data-background="fish"] {
+      background-image: url("./assets/autumn-vn/fish.png?v=1");
+    }
+
+    .bg[data-background="finalTree"] {
+      background-image: url("./assets/autumn-vn/background-4.png?v=1");
+    }
+
+    .top-button {
+      position: absolute;
+      top: 18px;
+      z-index: 8;
+      min-height: 36px;
+      padding: 0 14px;
+      border: 3px solid #4b2517;
+      background: #d99045;
+      color: #35190f;
+      box-shadow: inset 0 0 0 3px #f0bd68, 0 4px 0 #2a120b;
+      font: inherit;
+    }
+
+    .back {
+      left: 18px;
+    }
+
+    .achievements {
+      right: 18px;
+    }
+
+    .achievement-panel {
+      position: absolute;
+      top: 66px;
+      right: 18px;
+      width: min(72vw, 310px);
+      padding: 14px;
+      border: 4px solid #3b1f13;
+      background: rgba(93, 50, 28, 0.96);
+      box-shadow: inset 0 0 0 4px #d5964c, 0 7px 0 #241008;
+      z-index: 8;
+    }
+
+    .achievement-panel ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .achievement-panel li {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: #987f68;
+    }
+
+    .achievement-panel li.on {
+      color: #ffe39b;
+    }
+
+    .star {
+      color: #6b625b;
+    }
+
+    .on .star {
+      color: #ffd34d;
+      text-shadow: 0 0 6px #ffef9f;
+    }
+
+    .dialogue {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      bottom: 5%;
+      min-height: 26%;
+      padding: 22px 24px;
+      border: 5px solid #3b1f13;
+      background: rgba(93, 50, 28, 0.92);
+      box-shadow: inset 0 0 0 4px #d5964c, 0 8px 0 #241008;
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 520ms ease, transform 520ms ease;
+      z-index: 5;
+    }
+
+    .dialogue.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .speaker {
+      color: #ffe39b;
+      margin-bottom: 12px;
+    }
+
+    .text {
+      min-height: 64px;
+      font-size: clamp(16px, 2.4vw, 24px);
+      line-height: 1.75;
+      color: #fff1c4;
+    }
+
+    .choices {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .choice,
+    .start {
+      border: 3px solid #4b2517;
+      background: #d99045;
+      color: #35190f;
+      box-shadow: inset 0 0 0 3px #f0bd68, 0 4px 0 #2a120b;
+      font: inherit;
+    }
+
+    .choice {
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    .start {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      padding: 14px 20px;
+      z-index: 8;
+    }
+
+    .toast {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      padding: 10px 16px;
+      border: 3px solid #4b2517;
+      background: #f0bd68;
+      color: #3b1f13;
+      opacity: 0;
+      transition: opacity 260ms ease, transform 260ms ease;
+      z-index: 7;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .reward-leaf {
+      position: absolute;
+      left: 58%;
+      top: -10%;
+      width: 12px;
+      height: 8px;
+      background: #c86a2e;
+      box-shadow: 3px 2px 0 #9b4222, 6px 4px 0 #e18a42, 10px 5px 0 #6f2c19;
+      transform: rotate(-24deg);
+      z-index: 6;
+      image-rendering: pixelated;
+    }
+
+    .reward-leaf.drop {
+      animation: rewardDrop 4.2s ease-in-out forwards;
+    }
+
+    .reward-leaf.claimed {
+      filter: drop-shadow(0 0 10px #ffe694);
+      animation: claimed 700ms ease infinite alternate;
+    }
+
+    .black {
+      position: absolute;
+      inset: 0;
+      background: #000;
+      z-index: 4;
+      opacity: 1;
+      transition: opacity 2600ms ease;
+      pointer-events: none;
+    }
+
+    .black.clear {
+      opacity: 0;
+    }
+
+    @keyframes breathe {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.06); }
+    }
+
+    @keyframes rewardDrop {
+      to { top: 62%; transform: rotate(18deg); }
+    }
+
+    @keyframes claimed {
+      to { transform: translateY(-8px) rotate(18deg); }
+    }
+  </style>
+</head>
+<body>
+  <main id="autumnVN" class="stage" data-background="opening">
+    <audio id="windAudio" src="./assets/autumn-vn/wind-through-the-leaves.mp3" preload="auto"></audio>
+    <button id="backButton" class="top-button back" type="button">返回</button>
+    <button id="achievementButton" class="top-button achievements" type="button">成就</button>
+    <aside id="achievementPanel" class="achievement-panel" hidden>
+      <ul id="achievementList"></ul>
+    </aside>
+    <div id="black" class="black"></div>
+    <div id="backgroundLayer" class="layer bg"></div>
+    <button id="startGate" class="start" type="button" hidden>点击开始</button>
+    <section id="dialogueBox" class="dialogue" hidden>
+      <div id="speakerName" class="speaker"></div>
+      <div id="dialogueText" class="text"></div>
+      <div id="choices" class="choices"></div>
+    </section>
+    <div id="rewardLeaf" class="reward-leaf" hidden></div>
+    <div id="toast" class="toast"></div>
+  </main>
+
+  <script type="module">
+    import { AutumnVisualNovelScene } from "./autumn-vn-scene.js?v=2";
+
+    new AutumnVisualNovelScene(document.querySelector("#autumnVN")).start();
+  </script>
+</body>
+</html>
