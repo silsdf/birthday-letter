@@ -1,0 +1,42 @@
+@media (orientation: portrait) and (max-width: 900px) {
+  html.force-landscape {
+    width: 100vh;
+    height: 100vw;
+    overflow: hidden;
+    background: #1c100a;
+  }
+
+  html.force-landscape body {
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: 100vh;
+    height: 100vw;
+    min-width: 100vh;
+    min-height: 100vw;
+    overflow: hidden;
+    transform: rotate(90deg) translateY(-100%);
+    transform-origin: 0 0;
+  }
+
+  html.force-landscape #autumnVN {
+    width: min(100vh, 177.78vw) !important;
+  }
+
+  html.force-landscape .scene {
+    width: min(82vh, 720px) !important;
+  }
+
+  html.force-landscape .letter,
+  html.force-landscape .password-gate {
+    width: min(90vh, 760px) !important;
+  }
+
+  html.force-landscape .egg-panel {
+    width: min(88vh, 560px) !important;
+  }
+
+  html.force-landscape .album {
+    width: min(94vh, 1080px) !important;
+    min-height: min(88vw, 720px) !important;
+  }
+}
