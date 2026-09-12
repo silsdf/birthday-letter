@@ -206,9 +206,7 @@
       .touch-controls {
         left: auto;
         right: calc((100vw - min(100vw, 100dvh)) / 2 + max(12px, env(safe-area-inset-right)));
-        top: 50%;
-        bottom: auto;
-        transform: translateY(-50%);
+        bottom: max(14px, env(safe-area-inset-bottom));
         grid-template-columns: repeat(3, 44px);
         grid-template-rows: repeat(4, 44px);
         gap: 5px;
