@@ -2,7 +2,6 @@
   async function enterFullscreen() {
     try {
       await document.documentElement.requestFullscreen?.();
-      await screen.orientation?.lock?.("landscape");
     } catch {}
     document.documentElement.classList.toggle("is-fullscreen", Boolean(document.fullscreenElement));
   }

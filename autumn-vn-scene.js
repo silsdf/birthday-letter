@@ -89,7 +89,7 @@ export class AutumnVisualNovelScene {
       setTimeout(() => {
         const next = this.state.currentNode.next;
         if (next) this.playNode(next);
-        else this.finish();
+        else this.dialogue.showFinishButton(() => this.finish());
       }, 900);
       return;
     }
@@ -355,6 +355,20 @@ class DialogueBox {
       });
       this.choices.appendChild(button);
     }
+  }
+
+  showFinishButton(handler) {
+    this.state.phase = "choice";
+    this.state.choiceList = null;
+    this.choices.innerHTML = "";
+    const button = document.createElement("button");
+    button.className = "choice";
+    button.textContent = "继续前往下一幕";
+    button.addEventListener("click", () => {
+      this.choices.innerHTML = "";
+      handler();
+    }, { once: true });
+    this.choices.appendChild(button);
   }
 
   onChoice(handler) {
