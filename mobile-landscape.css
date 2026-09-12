@@ -28,6 +28,10 @@ html.is-fullscreen .fullscreen-button {
   display: none;
 }
 
+html.is-fullscreen [data-fullscreen-button] {
+  display: none;
+}
+
 @media (orientation: landscape) and (max-height: 720px) {
   html.force-landscape .scene {
     width: min(86vw, 720px) !important;

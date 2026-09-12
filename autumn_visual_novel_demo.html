@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>秋日来信 · 第三幕</title>
   <link rel="stylesheet" href="./mobile-landscape.css">
-  <script src="./mobile-fullscreen.js" defer></script>
+  <script src="./mobile-fullscreen.js?v=5" defer></script>
   <style>
     @font-face {
       font-family: "Fusion Pixel";
@@ -99,6 +99,11 @@
 
     .achievements {
       right: 18px;
+    }
+
+    .fullscreen {
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     .achievement-panel {
@@ -281,6 +286,7 @@
   <main id="autumnVN" class="stage" data-background="opening">
     <audio id="windAudio" src="./assets/autumn-vn/wind-through-the-leaves.mp3" preload="auto"></audio>
     <button id="backButton" class="top-button back" type="button">返回</button>
+    <button id="fullscreenButton" class="top-button fullscreen" type="button" data-fullscreen-button>全屏</button>
     <button id="achievementButton" class="top-button achievements" type="button">成就</button>
     <aside id="achievementPanel" class="achievement-panel" hidden>
       <ul id="achievementList"></ul>
