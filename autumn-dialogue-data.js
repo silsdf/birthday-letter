@@ -25,7 +25,7 @@ export const dialogueData = {
         { text: "越是深处越是静谧" },
         { text: "踩在落满叶子的地上，沙沙作响的声音，似乎打扰到了某个小东西", sound: "steps" },
         { text: "你获得了一个【松果】" },
-        { text: "这似乎是秋天的礼物" }
+        { text: "这是秋天的礼物" }
       ],
       choices: [
         { text: "吃掉", next: "forestEat" },
@@ -54,7 +54,7 @@ export const dialogueData = {
         { text: "越是深处越是静谧" },
         { text: "踩在落满叶子的地上，沙沙作响的声音，似乎打扰到了某个小东西", sound: "steps" },
         { text: "你获得了一个【蘑菇】" },
-        { text: "这似乎是秋天的礼物" }
+        { text: "这是秋天的礼物" }
       ],
       choices: [
         { text: "吃掉", next: "mountainEat" },
